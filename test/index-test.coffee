@@ -49,6 +49,15 @@ describe 'TypeInfo', ->
     t.should.be.not.equal TypeInfo('Test')
     t.should.have.property 'min', 2
     t.should.have.property 'name', 'Test'
+
+  describe '#create()', ->
+    it 'should create a new type object', ->
+      t = TypeInfo.create 'Test'
+      should.exist t
+      t.should.be.not.equal TypeInfo('Test')
+      t.should.be.instanceOf TestType
+      t.should.have.property 'name', 'Test'
+
   describe '.pathArray()', ->
     it 'should get default type path array', ->
       t = TypeInfo('Test')
