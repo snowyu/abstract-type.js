@@ -361,7 +361,7 @@ var Value = Type.Value
 
 var val = Value(1, Type 'Number')
 
-assert.deepEqual val.toObject(), {a:1}
+assert.equal val.toObject(), 1
 
 ```
 
