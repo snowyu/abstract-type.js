@@ -6,7 +6,8 @@ isObject        = require 'util-ex/lib/is/type/object'
 isFunction      = require 'util-ex/lib/is/type/function'
 isString        = require 'util-ex/lib/is/type/string'
 isArray         = require 'util-ex/lib/is/type/array'
-defineProperty  = require('util-ex/lib/defineProperty')
+isUndefined     = require 'util-ex/lib/is/type/undefined'
+defineProperty  = require 'util-ex/lib/defineProperty'
 Attributes      = require './attributes/'
 
 attributes      = new Attributes()
