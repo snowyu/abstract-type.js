@@ -46,10 +46,11 @@ class Value
     return
   assign: (aValue, aOptions)->
     checkValidity = aOptions.checkValidity if aOptions
+    vType  = @$type
     if aValue instanceof Value
       aValue = aValue.valueOf()
-    else if @$type._decodeValue
-      aValue = @$type._decodeValue aValue
+    else if vType.stringToValue and isString(aValue)
+      aValue = vType.stringToValue aValue
     @$type.validate(aValue, checkValidity) if checkValidity isnt false
     @_assign aValue
     @
@@ -72,19 +73,17 @@ class Value
   # assign value from JSON string.
   fromJson: (aString)->
     aString = JSON.parse aString
-    decode = @$type._decodeValue
-    aString = decode aString if decode
     @assign aString
   # create a new value object from JSON string.
   createFromJson: (aString)->
     aString = JSON.parse aString
-    decode = @$type._decodeValue
-    aString = decode aString if decode
-    createObject @$type.ValueType, aString, @$type
+    vType  = @$type
+    aString = vType.stringToValue aString if vType.stringToValue
+    createObject @$type.ValueType, aString, vType
   toJSON: (aOptions)->
     result = @toObject(aOptions)
-    encode = @$type._encodeValue
-    result = encode result if encode
+    vType  = @$type
+    result = vType.valueToString result if vType.valueToString
     result
   toJson: (aOptions)->
     result = @toJSON(aOptions)
