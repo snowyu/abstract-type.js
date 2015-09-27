@@ -20,11 +20,6 @@ class TestType
       type: 'Number'
     max:
       type: 'Number'
-  initialize: (aOptions)->
-    super(aOptions)
-    if aOptions
-      extend @, aOptions, (k,v)->k in ['min', 'max']
-    return
 
 
 describe 'TypeInfo', ->
