@@ -22,6 +22,7 @@ class Value
       result = result.substring(i+1, result.length-1) if i >= 0
     else
       result = typeof aValue
+      result =result.charAt(0).toUpperCase() + result.substring(1)
     result
   constructor: (aValue, aType, aOptions)->
     if not (aType instanceof Type)
@@ -58,15 +59,18 @@ class Value
     @$type.createValue aValue, aOptions
   clone: (aOptions) ->
     @create @valueOf(), aOptions
-  toString: (aOptions)->
-    String(@valueOf())
+  toString: -> String(@valueOf())
   valueOf: ->@value
   _toObject: (aOptions)->@valueOf()
   toObject: (aOptions)->
-    result = @_toObject(aOptions)
+    if aOptions and aOptions.withType
+      delete aOptions.withType
+      result = @toObjectWithType(aOptions)
+    else
+      result = @_toObject(aOptions)
     result
-  toObjectInfo: (aOptions)->
-    result = @toObject(aOptions)
+  toObjectWithType: (aOptions)->
+    result = @_toObject(aOptions)
     aOptions = {} unless aOptions
     aOptions.value = result
     @$type.toObject(aOptions)
@@ -83,7 +87,11 @@ class Value
   toJSON: (aOptions)->
     result = @toObject(aOptions)
     vType  = @$type
-    result = vType.valueToString result if vType.valueToString
+    if vType.valueToString
+      if result.hasOwnProperty 'value'
+        result.value = vType.valueToString result.value
+      else
+        result = vType.valueToString result
     result
   toJson: (aOptions)->
     result = @toJSON(aOptions)
