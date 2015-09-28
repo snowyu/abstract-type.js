@@ -11,8 +11,7 @@ module.exports = class NumberType
       type: 'Number'
     max:
       type: 'Number'
-  valueToString: (aValue)->
-    aValue = String(aValue)
+  valueToString: (aValue)-> aValue #do nothing, just for testing.
   stringToValue: (aString)->
     if isInt aString
       aString = parseInt(aString)
