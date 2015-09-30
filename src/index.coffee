@@ -242,8 +242,8 @@ module.exports  = class Type
     vAttrs = @toJson(aOptions, aNameRequired).slice(1,-1)
     result += ': ' + vAttrs if vAttrs
     result
-  inspect: (aOptions)->
-    '<type ' + @_inspect(aOptions)+ '>'
+  inspect: ->
+    '<type ' + @_inspect()+ '>'
   toJson: (aOptions, aNameRequired)->
     result = @toObject(aOptions, aNameRequired)
     result = JSON.stringify result
