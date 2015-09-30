@@ -151,3 +151,9 @@ describe 'TypeInfo', ->
       t = TestType::createType(min:1, max:3)
       result = t.cloneType()
       expect(t.isSame result).to.be.true
+
+  describe '.inspect', ->
+    it 'should inspect', ->
+      t = TestType::createType(min:1, max:3)
+      result = t.inspect()
+      expect(result).to.be.equal '<type "Test": "min":1,"max":3>'

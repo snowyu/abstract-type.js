@@ -119,6 +119,13 @@ describe 'Value', ->
       expect(result.valueOf()).to.be.equal 12
       expect(result).to.be.not.equal n
   describe '.isValid()', ->
-    it 'should is valid the value object', ->
+    it 'should be valid the value object', ->
       n = number.create 12
       expect(n.isValid()).to.be.true
+  describe '.inspect()', ->
+    it 'should inspect the value object', ->
+      n = number.createType
+        'max':34
+        'min':5
+      n = n.create 12
+      expect(n.inspect()).to.be.equal '<value "12":"Number": "min":5,"max":34>'

@@ -96,6 +96,10 @@ class Value
   toJson: (aOptions)->
     result = @toJSON(aOptions)
     JSON.stringify result
+  _inspect: (aOptions)->
+    result = '"' + @toString() + '":' + @$type._inspect(aOptions)
+  inspect: ->
+    '<value ' + @_inspect() + '>'
 #End Value class
 
 module.exports  = class Type
@@ -232,8 +236,16 @@ module.exports  = class Type
 
   toString: (aOptions)->
     '[type '+ @name+']'
-  toJson: (aOptions)->
-    result = @toObject(aOptions)
+
+  _inspect: (aOptions, aNameRequired = false)->
+    result = '"' + @name + '"'
+    vAttrs = @toJson(aOptions, aNameRequired).slice(1,-1)
+    result += ': ' + vAttrs if vAttrs
+    result
+  inspect: (aOptions)->
+    '<type ' + @_inspect(aOptions)+ '>'
+  toJson: (aOptions, aNameRequired)->
+    result = @toObject(aOptions, aNameRequired)
     result = JSON.stringify result
     result
   _toObject:(aOptions, aNameRequired = true)->
