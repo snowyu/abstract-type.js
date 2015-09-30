@@ -126,12 +126,12 @@ describe 'TypeInfo', ->
       should.throw validator.validate.bind(validator, null), 'is an invalid'
 
   describe '.toObject', ->
-    it 'should export to a plain object', ->
+    it 'should export to a plain object with name', ->
       t = TestType::createType(min:1, max:3)
       result = t.toObject()
       expect(result).to.be.deep.equal min:1, max:3, name: 'Test'
 
-    it 'should export to a plain object with name', ->
+    it 'should export to a plain object', ->
       t = TestType::createType(min:1, max:3)
       result = t.toObject(null, false)
       expect(result).to.be.deep.equal min:1, max:3
