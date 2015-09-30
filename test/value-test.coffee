@@ -128,4 +128,4 @@ describe 'Value', ->
         'max':34
         'min':5
       n = n.create 12
-      expect(n.inspect()).to.be.equal '<value "12":"Number": "min":5,"max":34>'
+      expect(n.inspect()).to.be.equal '<type "Number": "value":12,"min":5,"max":34>'

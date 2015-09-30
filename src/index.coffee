@@ -96,10 +96,8 @@ class Value
   toJson: (aOptions)->
     result = @toJSON(aOptions)
     JSON.stringify result
-  _inspect: (aOptions)->
-    result = '"' + @toString() + '":' + @$type._inspect(aOptions)
   inspect: ->
-    '<value ' + @_inspect() + '>'
+    '<type '+@$type._inspect(value:@valueOf())+'>'
 #End Value class
 
 module.exports  = class Type
