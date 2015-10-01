@@ -18,7 +18,9 @@
     "lib"
   ],
   "keywords": [
-    "task",
+    "type",
+    "infomation",
+    "abstract-type",
     "registry",
     "collection",
     "factory",
