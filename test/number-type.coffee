@@ -12,16 +12,16 @@ module.exports = class NumberType
     max:
       type: 'Number'
   valueToString: (aValue)-> aValue #do nothing, just for testing.
-  stringToValue: (aString)->
+  toValue: (aString)->
     if isInt aString
       aString = parseInt(aString)
     else if isFloat aString
       aString = parseFloat(aString)
-    else
+    else unless isNumber aString
       aString = undefined
     aString
   _validate: (aValue, aOptions)->
-    aValue = @stringToValue(aValue) if isString aValue
+    aValue = @toValue(aValue) unless isNumber aValue
     result = isNumber aValue
     if result
       if aOptions

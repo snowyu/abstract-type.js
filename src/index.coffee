@@ -50,8 +50,8 @@ class Value
     vType  = @$type
     if aValue instanceof Value
       aValue = aValue.valueOf()
-    else if vType.stringToValue and isString(aValue)
-      aValue = vType.stringToValue aValue
+    else if vType.toValue
+      aValue = vType.toValue aValue
     @$type.validate(aValue, checkValidity) if checkValidity isnt false
     @_assign aValue
     @
@@ -82,7 +82,7 @@ class Value
   createFromJson: (aString)->
     aString = JSON.parse aString
     vType  = @$type
-    aString = vType.stringToValue aString if vType.stringToValue
+    aString = vType.toValue aString if vType.toValue
     createObject @$type.ValueType, aString, vType
   toJSON: (aOptions)->
     result = @toObject(aOptions)
