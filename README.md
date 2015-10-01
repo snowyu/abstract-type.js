@@ -21,6 +21,24 @@
 The abstract-type library includes the abstract `Type` class and `Value` class for streamable type info and validating value.
 
 
+## Concepts
+
+* Primitive Types
+  * All registered types are primitive types.
+  * It's the singleton type object on the global type factory.
+* Virtual Types
+  * It's an object of a primitive type.
+  * It can not be registered to the global type factory.
+  * It could be unlimited number of virtual types.
+    * It could use the LRU-cache factory to cache these virtual types(see usage).
+* Type Attributes: the attributes of the type. It's used to constrain the Type.
+  All types have the `name` and `required` attributes.
+  * `name` *(string)*: the type name.
+    * required   = true:  the type name must be required.
+    * enumerable = false: the type name can not be enumerable.
+  * `required` *(boolean)*: the attribute whether is required(must be exists, not optional).
+    default to false.
+* Value: the value with corresponding to the type information.
 
 ## Usage
 
