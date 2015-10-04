@@ -10,6 +10,7 @@ module.exports = class TypeAttributes
       required: true
       enumerable: false
       exported: true
+      assigned: true
       type: 'String'
     required:
       type: 'Boolean'

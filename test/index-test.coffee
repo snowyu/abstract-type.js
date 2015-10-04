@@ -44,6 +44,11 @@ describe 'TypeInfo', ->
     t.should.be.not.equal TypeInfo('Test')
     t.should.have.property 'min', 2
     t.should.have.property 'name', 'Test'
+  it 'should change the name', ->
+    t = TestType min:2
+    t = t.createType name: 'abc'
+    should.exist t
+    expect(t).have.property 'name', 'abc'
 
   describe '#create()', ->
     it 'should create a new type object', ->
