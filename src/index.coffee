@@ -51,7 +51,7 @@ class Value
     if aValue instanceof Value
       aValue = aValue.valueOf()
     else if vType.toValue
-      aValue = vType.toValue aValue
+      aValue = vType.toValue aValue, aOptions
     @$type.validate(aValue, checkValidity) if checkValidity isnt false
     @_assign aValue
     @
