@@ -45,6 +45,63 @@ The abstract-type library includes the abstract `Type` class and `Value` class f
 
 ### Create the number type
 
+The type has a name and can verify whether a value belongs to that type.
+We can draw the two concepts related to the type, from here:
+
+* Attributes: the attributes(meta data) of this type.
+* Value: the value of this type.
+
+* The Type Class
+  * Properties:
+    * $attributes *(object)*: the attributes of this type.
+  * Methods(should be overridden):
+    * `_initialize(aOptions)`: initialize the type object.
+    * `_assign(options)`: assign an options of type to itself.
+    * `_validate(aValue, aOptions)`: validate a value whether is valid.
+    * `valueToString(aValue)`: (optional) convert the value to string, it's used to convert to json.
+    * `toValue(aString)`: (optional) convert the string to the value, it's used to convert from json and assign from value.
+    * `ValueType` property: (optional) defaults to `Value` Class. unless implement your own Value class.
+* The Value Class
+  * Properties:
+    * `value`: store the value here.
+    * `$type` *(Type)*: point to the type of this value.
+  * Static/Class Methods:
+    * `tryGetTypeName(Value)`: try to guess the type name of the value.
+    * `constructor(value[, type[, options]])`: create a value instance.
+      * `value`: the assigned value. it will guess the type of the value if no type provided.
+      * `type` *(Type)*: the type of the value
+      * `options` *(object)*: the optional type of value options. it will create a new type if exists.
+  * Methods:
+    * `clone()`: clone this value object.
+    * `assign(value, options)`: assign the value.
+      * `aOptions` *(object)*:
+        * `checkValidity` *(boolean)*: defaults to true.
+    * `fromJson(json)`: assign a value from json string.
+    * `createFromJson(json)`: create a new value object from json string.
+    * `isValid()`: whether the value is valid.
+    * `toObject(aOptions)`: return a parametric object of the value. it wont include type info.
+      unless set the `withType` is true.
+      * aOptions *(object)*:
+        * `withType` *(boolean)*: whether includes the type info. default to false
+  * These methods could be overridden:
+    * `_toObject(aOptions)`: return the parametric object of this value.
+    * `valueOf()`: return the value.
+    * `_assign(value)`: assign the value to itself.
+* The Attributes class: describe the attributes of a type.
+  an attribute could include these properties:
+  * `name` *(string)*: the attribute name. you can specify a non-english name.
+    * the english name(the attributes' key) is used in the internal of the type.
+    * the `name` only used on export(`toObject`) or import(`assign`).
+  * `type` *(string)*: the attribute type.
+  * `enumerable` *(boolean)*: the attribute whether is a hidden attribute, defaults to true.
+    * the hidden attribute can not export to the parametric object(serialized).
+    * note: It's a hidden attribute too if attribute name begins with '$' char.
+  * `required` *(boolean)*: the attribute whether it's required(MUST HAVE).
+  * `value`: the default value of the attribute.
+  * `assign(value, dest, src, key)` *(function)*: optional special function to assign the attribute's `value`
+    from src[`key`] to dest[`key`].
+    * src, dest: the type object or the parametric type object.
+
 ```coffee
 TypeAttributes    = require 'abstract-type/lib/attributes'
 Type              = require 'abstract-type'
@@ -93,33 +150,38 @@ class NumberType
 
 ### Use the number type
 
-```coffee
-cacheable = require 'cache-factory'
-Type      = cacheable require('abstract-type') # apply the cache-able ability to Type
-require('number-type') #register the number type to Type.
+* Type(aTypeName, aOptions)
+  * get the type info object from glabal cache if aOptions is null
+    or the same as the original/default attributes value.
+  * else create a new virtual type info object.
+* type.createType(aObject) (Type::createType)
+  * create a new type info object instance always.
+  * the aObject.name should be exists as the type name.
 
-number = Type('Number') # get the number type object.
-assert.equal number, Type('Number')
+```js
+var cacheable = require('cache-factory')
+var Type      = cacheable(require('abstract-type')) // apply the cache-able ability to Type
+require('number-type') //register the number type to Type.
 
-num = Type 'Number', min:1, max:6 # create non-name a virutal type object.
-assert.notEqual number, num
+var number = Type('Number') // get the number type object.
+assert.equal(number, Type('Number'))
 
-NumberType = Type.registeredClass 'Number' # get Number Type Class
+var num = Type('Number', {min:1, max:6}) // create non-name a virutal type object.
+assert.notEqual(number, num)
 
-TPositiveNumber = # create a virtual type object
-  Type('Number', {min:0, cached: 'PositiveNumber'})
+var NumberType = Type.registeredClass('Number') // get Number Type Class
+
+// create a virtual type object
+var TPositiveNumber = Type('Number', {min:0, cached: 'PositiveNumber'})
 
 
-assert.notOk TPositiveNumber.isValid(-1)
-assert.ok TPositiveNumber.isValid(1) # validate a value
+assert.notOk(TPositiveNumber.isValid(-1))
+assert.ok(TPositiveNumber.isValid(1)) // validate a value
 
-n = TPositiveNumber.create(123) # create the value
+var n = TPositiveNumber.create(123) // create the value
 n = TPositiveNumber.createValue(123)
-assert.ok n.isValid()
-assert.equal Number(n) + 3, 126
-bool = Type('Boolean').create(true)
-assert.equal Number(bool), 1
-
+assert.ok(n.isValid())
+assert.equal(Number(n) + 3, 126)
 ```
 
 ## API
