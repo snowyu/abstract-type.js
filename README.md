@@ -347,10 +347,10 @@ to make the value streamable.
 + make the validators plugin-able
 
   ```coffee
-  NumberType.registerValidator
+  Type.registerValidator
     name: 'required'
     validate: (aValue)->aValue?
-  NumberType.registerValidator 'required', (aValue)->aValue?
+  Type.registerValidator 'required', (aValue)->aValue?
   ```
 
 ## License
