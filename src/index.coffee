@@ -39,7 +39,7 @@ class Value
     defineProperty @, '$type', aType
     @_initialize(aValue, aType, aOptions)
     @assign(aValue, aOptions)
-  isValid: ()->@$type.isValid(@valueOf())
+  isValid: (aOptions)->@$type.isValid(@valueOf(), aOptions)
   _initialize: (aValue, aType, aOptions)->
     defineProperty @, 'value', null
   _assign:(aValue)->
@@ -151,6 +151,29 @@ module.exports  = class Type
     @errors = null if @errors
     @_finalize(aOptions) if @_finalize
 
+  @validators: {}
+  # aValidatorFn  = (aValue, aOptions)->
+  @registerValidator: (aValidator, aValidatorFn)->
+    vIsFn = null
+    if isObject aValidator
+      aValidatorFn = aValidator.validate if vIsFn = isFunction aValidator.validate
+      aValidator = aValidator.name if aValidator.name
+    vIsFn  = isFunction(aValidatorFn) if vIsFn is null
+    result = vIsFn and isString(aValidator) and !Type.validators[aValidator]
+    Type.validators[aValidator] = aValidatorFn if result
+    return result
+  @unregisterValidator: (aValidatorName)->
+    delete Type.validators[aValidatorName]
+  _checkValidator: (aValue, aOptions)->
+    aOptions = @ unless isObject aOptions
+    result = true
+    for vName, vFn of Type.validators
+      if aOptions[vName]? or @$attributes.getRealAttrName vName
+        # u can push errors in the validation function
+        result = vFn.call @, aValue, aOptions
+        break unless result
+    result
+
   oldAssign = @::assign
   assign: (aOptions, aExclude)->
     @errors = []
@@ -177,12 +200,13 @@ module.exports  = class Type
     aOptions = @mergeTo(aOptions, 'name')
     aOptions.raiseError = true if raiseError
     result = @validateRequired aValue, aOptions
+    result = @_checkValidator(aValue, aOptions) if result
     result = @_validate(aValue, aOptions) if result and aValue?
     if raiseError isnt false and not result
       throw new TypeError('"'+aValue + '" is an invalid ' + @name)
     result
-  isValid: (aValue) ->
-    @validate(aValue, false)
+  isValid: (aValue, aOptions) ->
+    @validate(aValue, false, aOptions)
 
   createValue: (aValue, aOptions)->
     if aOptions and not @isSame(aOptions)

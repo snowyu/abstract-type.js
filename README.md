@@ -235,6 +235,24 @@ It's the abstract type info class and the type info manager.
     * *(object)*:
       * the created type object instance with the type info if no value in it.
       * the created value object instance if value in it.
+* `Type.registerValidator(aValidator)`:This class method is used to register a custom validator.
+  * __arguments__
+    * `aValidator` *(object)*: the validator.
+      * `name` *(string)*: the validator option name.
+      * `validate` *(function)*: the validator function: `function(value, options)`
+  * __return__
+    * *(boolean)*: whether successful.
+* `Type.registerValidator(name, validate)`:This class method is used to register a custom validator.
+  * __arguments__
+    * `name` *(string)*: the validator option name.
+    * `validate` *(function)*: the validator function: `function(value, options)`
+  * __return__
+    * *(boolean)*: whether successful.
+* `Type.unregisterValidator(name)`:This class method is used to unregister a custom validator.
+  * __arguments__
+    * `name` *(string)*: the validator name to unregister.
+  * __return__
+    * *(boolean)*: whether successful.
 * `cloneType()`:the instance method to clone the type object itself.
   * alias: clone
   * __return__
@@ -343,15 +361,6 @@ to make the value streamable.
     ```
 
 ## TODO
-
-+ make the validators plugin-able
-
-  ```coffee
-  Type.registerValidator
-    name: 'required'
-    validate: (aValue)->aValue?
-  Type.registerValidator 'required', (aValue)->aValue?
-  ```
 
 ## License
 
