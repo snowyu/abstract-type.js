@@ -48,10 +48,10 @@ class Value
   assign: (aValue, aOptions)->
     checkValidity = aOptions.checkValidity if aOptions
     vType  = @$type
-    if aValue instanceof Value
-      aValue = aValue.valueOf()
-    else if vType.toValue
+    if isFunction vType.toValue
       aValue = vType.toValue aValue, aOptions
+    else if aValue instanceof Value
+      aValue = aValue.valueOf()
     @$type.validate(aValue, checkValidity) if checkValidity isnt false
     @_assign aValue
     @
@@ -93,6 +93,7 @@ class Value
       else
         result = vType.valueToString result
     result
+  # convert a Json string.
   toJson: (aOptions)->
     result = @toJSON(aOptions)
     JSON.stringify result
