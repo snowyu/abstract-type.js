@@ -182,6 +182,12 @@ var n = TPositiveNumber.create(123) // create the value
 n = TPositiveNumber.createValue(123)
 assert.ok(n.isValid())
 assert.equal(Number(n) + 3, 126)
+
+//get the virtual type from cache:
+var N = Type('/type/AbstractNumber/Number/PositiveNumber')
+//N = NumberType('PositiveNumber')
+assert.equals(N, TPositiveNumber);
+
 ```
 
 ## API
