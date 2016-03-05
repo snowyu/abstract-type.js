@@ -14,6 +14,9 @@ module.exports = class TypeAttributes
       type: 'String'
     required:
       type: 'Boolean'
+    customValidate:
+      alias: ['custom-validate', 'validate']
+      type: 'function'
 
   constructor: (aOptions, nonExported1stChar)->
     if not (this instanceof TypeAttributes)

@@ -41,6 +41,8 @@ describe 'Custom Validator', ->
     expect(result, 'registerValidator').to.be.true
     expect(t.isValid(is1:true)).to.be.false
     expect(is1.validate).to.be.calledOnce
+    t = T.createValue 1
+    expect(t.isValid(is1:true)).to.be.true
     TypeInfo.unregisterValidator 'is1'
 
   it 'should register a validator via arguments', ->

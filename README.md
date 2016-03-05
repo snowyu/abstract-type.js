@@ -195,6 +195,10 @@ It's the abstract type info class and the type info manager.
     * `typeName` *(string)*: the type name.
     * `options` *(object)*: optional type options to apply. different types have different options.
       * `name` *(string)*: the type name.
+      * `validate` *(function)*: assign the custom validate function.
+        * `function(value)` the first argument is the value to validate.
+          *  return the validation result.
+        * stored into the `customValidate` property internal.
       * `...`: the type's specified options to create a new virtual type object.
   * __return__
     * *(object)*: the type object instance.
@@ -202,14 +206,18 @@ It's the abstract type info class and the type info manager.
 
     ```js
     // get the default type object
-    var number = Type('number')
+    var TNumber = Type('number')
     // other way to get the default type object
-    number = Type({name: 'number'})
+    TNumber = Type({name: 'number'})
     // another way to get the default type object
-    number = NumberType()
+    TNumber = NumberType()
     // create a new virtual type object.
     var TPositiveNumber = Type('number', {min:0})
-    assert.notEqual(TPositiveNumber, number)
+    assert.notEqual(TPositiveNumber, TNumber)
+
+    // create a new virtual type object.
+    TPositiveNumber = Type('number', {validate: function(v){return v>=0}})
+    assert.notEqual(TPositiveNumber, TNumber)
     ```
 * `Type.create(typeName, options)`:This class method is used to create a new Type instance object.
   * __arguments__
@@ -361,6 +369,8 @@ to make the value streamable.
     ```
 
 ## TODO
+
++ compare(value1, value2) and equals(value1, value2) to compare value.
 
 ## License
 

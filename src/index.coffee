@@ -178,6 +178,7 @@ module.exports  = class Type
   oldAssign = @::assign
   assign: (aOptions, aExclude)->
     @errors = []
+
     return oldAssign.call @, aOptions, aExclude
 
   _validate: (aValue, aOptions)->true
@@ -198,10 +199,13 @@ module.exports  = class Type
     if isObject raiseError
       aOptions    = raiseError
       raiseError  = aOptions.raiseError
+    customValidate = @$attributes.getValue(aOptions, 'customValidate') if aOptions
     aOptions = @mergeTo(aOptions, 'name')
+    customValidate = aOptions.customValidate unless customValidate
     aOptions.raiseError = true if raiseError
     result = @validateRequired aValue, aOptions
     result = @_checkValidator(aValue, aOptions) if result
+    result = customValidate.call(@, aValue, aOptions) if result and isFunction customValidate
     result = @_validate(aValue, aOptions) if result and aValue?
     if raiseError isnt false and not result
       throw new TypeError('"'+aValue + '" is an invalid ' + @name)
