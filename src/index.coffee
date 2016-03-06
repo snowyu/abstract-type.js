@@ -8,6 +8,7 @@ isString        = require 'util-ex/lib/is/type/string'
 isArray         = require 'util-ex/lib/is/type/array'
 isUndefined     = require 'util-ex/lib/is/type/undefined'
 defineProperty  = require 'util-ex/lib/defineProperty'
+extend          = require 'util-ex/lib/_extend'
 Attributes      = require './attributes/'
 
 attributes      = new Attributes()
@@ -70,10 +71,11 @@ class Value
       result = @_toObject(aOptions)
     result
   toObjectWithType: (aOptions)->
-    result = @_toObject(aOptions)
-    aOptions = {} unless aOptions
-    aOptions.value = result
-    @$type.toObject(aOptions)
+    value = @_toObject(aOptions)
+    #aOptions = {} unless aOptions
+    result = @$type.toObject(aOptions)
+    result.value = value
+    result
   # assign value from JSON string.
   fromJson: (aString)->
     aString = JSON.parse aString
@@ -281,9 +283,11 @@ module.exports  = class Type
     result
   toObject: (aOptions, aNameRequired)->
     if aOptions
-      if not aOptions.typeOnly and not isUndefined aOptions.value
+      unless aOptions.typeOnly or isUndefined aOptions.value
         value = aOptions.value
+      aOptions = extend({}, aOptions)
       delete aOptions.typeOnly
+      delete aOptions.value
     result = @_toObject(aOptions, aNameRequired)
     result.value = value unless isUndefined value
     result
