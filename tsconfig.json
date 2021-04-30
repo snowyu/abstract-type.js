@@ -32,5 +32,5 @@
     "entryPoints": ["src/index.js"],
     "out": "docs"
   },
-  "exclude": ["**/*.spec.js", "**/*.test.js"]
+  "exclude": ["**/*.spec.js", "**/*.test.js","**/*.spec.ts", "**/*.test.ts"]
 }

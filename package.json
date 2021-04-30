@@ -7,7 +7,8 @@
     "type": "git",
     "url": "git://github.com/snowyu/abstract-type.js.git"
   },
-  "main": "./index",
+  "main": "./lib",
+  "types": "./types",
   "files": [
     "README.md",
     "LICENSE-MIT",

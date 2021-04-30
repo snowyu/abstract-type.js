@@ -4,14 +4,9 @@ import {
   isPureObject,
 } from 'custom-factory'
 import properties from 'property-manager/lib/ability'
-import { IMergeOptions } from 'property-manager/lib/abstract'
-import Properties from 'property-manager/lib/properties'
-import isInheritedFrom from 'inherits-ex/lib/isInheritedFrom'
 import isObject from 'util-ex/lib/is/type/object'
 import isFunction from 'util-ex/lib/is/type/function'
 import isString from 'util-ex/lib/is/type/string'
-import isArray from 'util-ex/lib/is/type/array'
-import isUndefined from 'util-ex/lib/is/type/undefined'
 import defineProperty from 'util-ex/lib/defineProperty'
 import getPrototypeOf from 'inherits-ex/lib/getPrototypeOf'
 
@@ -20,8 +15,14 @@ import getPrototypeOf from 'inherits-ex/lib/getPrototypeOf'
 const objectToString = Object.prototype.toString
 // const getObjectKeys   = Object.keys
 
-interface ITypeOptions extends IBaseFactoryOptions {
+export interface ITypeOptions extends IBaseFactoryOptions {
   [name: string]: any
+}
+
+export interface IErrorMessage {
+  name: string
+  message: string
+  [ix: string]: any
 }
 
 /**
@@ -33,6 +34,7 @@ export class Type extends CustomFactory {
    * the root name
    */
   static ROOT_NAME = 'type'
+  errors: null | IErrorMessage[] = null
 
   static register(aClass, aOptions?: string | ITypeOptions)
   static register(
@@ -41,19 +43,19 @@ export class Type extends CustomFactory {
     aOptions?: string | ITypeOptions
   ) {
     /* istanbul ignore else */
-    if (isString(aParentClass)) {
+    if (typeof aParentClass === 'string') {
       aOptions = aParentClass
       aParentClass = undefined
     } else if (isPureObject(aParentClass)) {
       aOptions = aParentClass
-      aParentClass = aOptions.parent
+      aParentClass = aOptions!.parent
     }
 
     const result = super.register(aClass, aParentClass, aOptions)
     /* istanbul ignore else */
     if (result) {
       const vPrototype = this.prototype
-      const $attributes = vPrototype.$attributes
+      const $attributes = (vPrototype as any).$attributes
       if (!aOptions || isString(aOptions)) aOptions = {}
       $attributes.initializeTo(aClass, aOptions, { skipUndefined: true })
     }
@@ -96,16 +98,17 @@ export class Type extends CustomFactory {
     if (aTypeName) {
       if (isObject(aTypeName) || !isString(aTypeName)) {
         aOptions = aTypeName
+        const $attributes = (this.prototype as any).$attributes
         // get the type name for the value with type.
-        aTypeName = this.prototype.$attributes.getValue(aOptions, 'name')
+        aTypeName = $attributes.getValue(aOptions, 'name')
       }
     }
     /* istanbul ignore else */
     if (aTypeName) return super.get(aTypeName)
   }
 
-  static toString() {
-    return this.prototype.name
+  static toString(): string {
+    return (this.prototype as any).name || this.name
   }
 
   /**
@@ -115,8 +118,9 @@ export class Type extends CustomFactory {
    * @param {Object} aOptions the type options object
    * @returns {Type} the value of the type
    */
-  constructor(aValue, aOptions?)
-  constructor(aValue, aType?, aOptions?) {
+  constructor(aValue?, aOptions?)
+  constructor(aValue?, aType?, aOptions?) {
+    // super() // only for generate declaration file
     if (isPureObject(aType)) {
       aOptions = aType
       aType = aOptions.name
@@ -141,31 +145,37 @@ export class Type extends CustomFactory {
   /**
    * @internal
    */
-  initialize(aValue, aOptions) {
+  initialize(aValue?, aOptions?) {
     defineProperty(this, 'errors', null)
-    const TheType = this.Class || this.constructor
+    const TheType = (this as any).Class || this.constructor
+    const $attributes = (this as any).$attributes
     /* istanbul ignore else */
-    if (this.$attributes) this.$attributes.initializeTo(this, TheType)
-    if (this._initialize) this._initialize(aValue, aOptions)
+    if ($attributes) {
+      $attributes.initializeTo(this, TheType)
+    }
+    this._initialize(aValue, aOptions)
     if (aValue !== undefined || aOptions != null) this.assign(aValue, aOptions)
     return 'ok'
   }
 
   /* istanbul ignore next */
-  finalize(aOptions) {
+  finalize(aOptions?) {
     if (this.errors) this.errors = null
-    if (this.value) this.value = null
-    if (this._finalize) this._finalize(aOptions)
+    if ((this as any).value) (this as any).value = null
+    this._finalize(aOptions)
   }
 
-  assign(aValue, aOptions, aExclude) {
+  _finalize(aOptions?) {}
+  _initialize(aValue?, aOptions?) {}
+
+  assign(aValue, aOptions?, aExclude?) {
     this.errors = []
     if (!aOptions) aOptions = {}
     const checkValidity = aOptions.checkValidity
-    const TheType = this.Class || this.constructor
+    const TheType = (this as any).Class || this.constructor
 
     if (aValue instanceof Type) {
-      aValue = aValue.toObject()
+      aValue = (aValue as any).toObject()
     } else if (!isPureObject(aValue)) {
       /* istanbul ignore if */
       if (isFunction(TheType.toValue)) {
@@ -175,22 +185,24 @@ export class Type extends CustomFactory {
       }
       aValue = { value: aValue }
     }
-
-    this.$attributes.initializeTo(aValue, aOptions, { skipUndefined: true })
+    const $attributes = (this as any).$attributes
+    $attributes.initializeTo(aValue, aOptions, {
+      skipUndefined: true,
+    })
 
     if (checkValidity !== false) this.validate(aValue, checkValidity)
     if (aExclude) {
       aOptions.exclude = aExclude
     }
-    return this.__assign(aValue, aOptions)
+    return (this as any).__assign(aValue, aOptions)
   }
 
   valueOf() {
-    return this.value
+    return (this as any).value
   }
 
-  toString() {
-    return this.value + ''
+  toString(): string {
+    return this.valueOf() + ''
   }
 
   /**
@@ -202,7 +214,7 @@ export class Type extends CustomFactory {
     if (!isObject(aOptions)) {
       aOptions = this
     } else {
-      aOptions = this.mergeTo(aOptions, {
+      aOptions = (this as any).mergeTo(aOptions, {
         skipNull: true,
         skipUndefined: true,
         exclude: 'name',
@@ -212,7 +224,7 @@ export class Type extends CustomFactory {
   }
 
   _isRequired(aValue, aOptions) {
-    const vRequired = this.$attributes.getValue(aOptions, 'required')
+    const vRequired = (this as any).$attributes.getValue(aOptions, 'required')
     const result = !vRequired || (vRequired === true && aValue != null)
     return result
   }
@@ -223,16 +235,19 @@ export class Type extends CustomFactory {
   }
 
   error(aMessage, aOptions) {
-    name =
-      (aOptions && this.$attributes.getValue(aOptions, 'name')) || String(this)
-    this.errors.push({ name, message: aMessage })
+    const TheType = (this as any).Class || this.constructor
+    const name: string =
+      (aOptions && (this as any).$attributes.getValue(aOptions, 'name')) ||
+      String(TheType)
+    this.errors?.push({ name, message: aMessage })
   }
 
   validateRequired(aOptions?) {
     const result = this.isRequired(aOptions)
     if (!result) {
       if (aOptions?.raiseError !== false) {
-        throw new TypeError('"' + this.name + '" is required')
+        const TheType = (this as any).Class || this.constructor
+        throw new TypeError('"' + String(TheType) + '" is required')
       } else {
         this.error('is required', aOptions)
       }
@@ -254,11 +269,12 @@ export class Type extends CustomFactory {
       raiseError = aOptions.raiseError
     }
     if (aOptions) {
+      const $attributes = (this as any).$attributes
       // allow use the property alias of customValidate
-      customValidate = this.$attributes.getValue(aOptions, 'customValidate')
+      customValidate = $attributes.getValue(aOptions, 'customValidate')
       if (raiseError === undefined) raiseError = aOptions.raiseError
     }
-    aOptions = this.mergeTo(aOptions, {
+    aOptions = (this as any).mergeTo(aOptions, {
       skipNull: true,
       skipUndefined: true,
       exclude: 'name',
@@ -273,12 +289,16 @@ export class Type extends CustomFactory {
     if (result) {
       result = this._validate(aOptions.value, aOptions)
     }
-    if (raiseError !== false && !result)
-      throw new TypeError('"' + aOptions.value + '" is an invalid ' + this.name)
+    if (raiseError !== false && !result) {
+      const TheType = (this as any).Class || this.constructor
+      throw new TypeError(
+        '"' + aOptions.value + '" is an invalid ' + String(TheType)
+      )
+    }
     return result
   }
 
-  isValid(aOptions) {
+  isValid(aOptions?) {
     return this.validate(aOptions, false)
   }
 }
@@ -287,9 +307,7 @@ properties(Type, { name: 'advance' })
 export const register = Type.register.bind(Type)
 export const unregister = Type.unregister.bind(Type)
 export const alias = Type.setAliases.bind(Type)
-
-const defineProperties = Type.defineProperties
-// console.log('TCL:: ~ file: abstract-type.ts ~ line 149 ~ defineProperties', defineProperties);
+export const defineProperties = (Type as any).defineProperties
 
 defineProperties(Type, {
   name: {

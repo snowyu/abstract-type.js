@@ -19,7 +19,7 @@ describe('AbstractType', () => {
       expect(Type.get({ name: 'boolean' })).toStrictEqual(BooleanType)
       let result = new NumberType(13)
       expect(result.valueOf()).toEqual(13)
-      expect(result + 0).toEqual(13)
+      expect((result as any) + 0).toEqual(13)
       result = new Type(13)
       expect(result).toBeInstanceOf(NumberType)
       expect(result.valueOf()).toEqual(13)
@@ -81,7 +81,7 @@ describe('AbstractType', () => {
         class IntType extends NumberType {}
         expect(NumberType.register(IntType, 'integer')).toBeTrue()
         try {
-          expect(IntType.prototype.name).toStrictEqual('integer')
+          expect(IntType.prototype['name']).toStrictEqual('integer')
         } finally {
           expect(unregister(IntType)).toBeTruthy()
         }
@@ -92,7 +92,7 @@ describe('AbstractType', () => {
           Type.register(IntType, { parent: NumberType, name: 'integer' })
         ).toBeTrue()
         try {
-          expect(IntType.prototype.name).toStrictEqual('integer')
+          expect(IntType.prototype['name']).toStrictEqual('integer')
         } finally {
           expect(unregister(IntType)).toBeTruthy()
         }
