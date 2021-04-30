@@ -230,7 +230,7 @@ export class Type extends CustomFactory {
   }
 
   /* istanbul ignore next */
-  _validate(aValue, aOptions?) {
+  _validate(aValue, aOptions) {
     return true
   }
 
