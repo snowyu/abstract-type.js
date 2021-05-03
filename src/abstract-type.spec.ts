@@ -4,7 +4,12 @@ import isInteger from 'util-ex/lib/is/type/integer'
 
 describe('AbstractType', () => {
   class NumberType extends Type {}
-  class BooleanType extends Type {}
+  class BooleanType extends Type {
+    static toValue(value) {
+      if (value.valueOf) value = value.valueOf()
+      return !!value
+    }
+  }
   expect(register(NumberType, { aliases: ['number'] })).toBeTrue()
   expect(register(BooleanType, { aliases: ['boolean'] })).toBeTrue()
 
@@ -150,6 +155,18 @@ describe('AbstractType', () => {
         expect(result.valueOf()).toStrictEqual(5)
         expect(result).toHaveProperty('customValidate', undefined)
       })
+      it('should assign value with valueOf', () => {
+        class A {
+          constructor(public value) {}
+          valueOf() {
+            return this.value
+          }
+        }
+        let result = new NumberType(new A(12))
+        expect(result.valueOf()).toStrictEqual(12)
+        result = new BooleanType(new A(0))
+        expect(result.valueOf()).toBeFalse()
+      })
     })
 
     describe('validate', () => {
@@ -195,6 +212,19 @@ describe('AbstractType', () => {
         expect(result.validateRequired({ raiseError: false })).toBeFalse()
         expect(result.errors).toHaveLength(1)
         expect(result.validateRequired({ value: 12 })).toBeTrue()
+      })
+    })
+    describe('toObject', () => {
+      it('should convert value to json object!', () => {
+        const result = new NumberType(12)
+        expect(result.toObject()).toStrictEqual(12)
+      })
+      it('should convert value to json object with type', () => {
+        const result = new NumberType(12)
+        expect(result.toObject({ withType: true })).toEqual({
+          name: 'Number',
+          value: 12,
+        })
       })
     })
   })

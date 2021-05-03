@@ -1,14 +1,18 @@
+/* eslint-disable prettier/prettier */
 import {
   CustomFactory,
   IBaseFactoryOptions,
   isPureObject,
 } from 'custom-factory'
 import properties from 'property-manager/lib/ability'
+import { IMergeOptions } from 'property-manager/lib/abstract'
 import isObject from 'util-ex/lib/is/type/object'
 import isFunction from 'util-ex/lib/is/type/function'
 import isString from 'util-ex/lib/is/type/string'
 import defineProperty from 'util-ex/lib/defineProperty'
 import getPrototypeOf from 'inherits-ex/lib/getPrototypeOf'
+// import createCtor from 'inherits-ex/lib/createCtor'
+// import inherits from 'inherits-ex/lib/inherits'
 
 // const extend          = require('util-ex/lib/_extend')
 
@@ -17,6 +21,11 @@ const objectToString = Object.prototype.toString
 
 export interface ITypeOptions extends IBaseFactoryOptions {
   [name: string]: any
+}
+
+export interface ITypeObjectOptions extends IMergeOptions {
+  typeOnly?: boolean
+  [key: string]: any
 }
 
 export interface IErrorMessage {
@@ -36,12 +45,12 @@ export class Type extends CustomFactory {
   static ROOT_NAME = 'type'
   errors: null | IErrorMessage[] = null
 
-  static register(aClass, aOptions?: string | ITypeOptions)
+  static register(aClass, aOptions?: string | ITypeOptions): boolean
   static register(
     aClass,
     aParentClass?: typeof Type | string | ITypeOptions,
     aOptions?: string | ITypeOptions
-  ) {
+  ): boolean {
     /* istanbul ignore else */
     if (typeof aParentClass === 'string') {
       aOptions = aParentClass
@@ -108,8 +117,22 @@ export class Type extends CustomFactory {
   }
 
   static toString(): string {
+    /* istanbul ignore next */
     return (this.prototype as any).name || this.name
   }
+
+  // static createType(aType?, aOptions?): typeof Type {
+  //   if (isPureObject(aType)) {
+  //     aOptions = aType
+  //     aType = aOptions.name
+  //   }
+  //   if (typeof aType === 'string') {
+  //     const result = createCtor(aType)
+  //     if (this.register(result, aOptions)) {
+  //       return result
+  //     }
+  //   }
+  // }
 
   /**
    * Create a new value instance of the type
@@ -175,20 +198,25 @@ export class Type extends CustomFactory {
     const TheType = (this as any).Class || this.constructor
 
     if (aValue instanceof Type) {
-      aValue = (aValue as any).toObject()
+      aValue = (aValue as any).toObject({withType: true})
     } else if (!isPureObject(aValue)) {
-      /* istanbul ignore if */
-      if (isFunction(TheType.toValue)) {
-        aValue = TheType.toValue(aValue, aOptions)
-      } else if (aValue && isFunction(aValue.valueOf)) {
-        aValue = aValue.valueOf()
-      }
       aValue = { value: aValue }
     }
+
     const $attributes = (this as any).$attributes
     $attributes.initializeTo(aValue, aOptions, {
       skipUndefined: true,
     })
+
+    let value = aValue.value
+    if (value != null) {
+      if (isFunction(TheType.toValue)) {
+        value = TheType.toValue(value, aOptions)
+      } /* istanbul ignore else */ else if (isFunction(value.valueOf)) {
+        value = value.valueOf()
+      }
+      aValue.value = value
+    }
 
     if (checkValidity !== false) this.validate(aValue, checkValidity)
     if (aExclude) {
@@ -203,6 +231,38 @@ export class Type extends CustomFactory {
 
   toString(): string {
     return this.valueOf() + ''
+  }
+
+  _toObject(aOptions?) {
+    return this.valueOf()
+  }
+
+  toTypeObject(
+    this: any,
+    aOptions?: ITypeObjectOptions,
+    aNameRequired = true
+  ) {
+    const exclude = aNameRequired ? ['value'] : ['name', 'value']
+    if (!aOptions) aOptions = {}
+    aOptions.exclude = addItemToArray(exclude, aOptions.exclude)
+    return this.exportTo({}, aOptions)
+  }
+
+  toObject(this: any, aOptions?, aNameRequired?: boolean) {
+    const withType = aOptions && aOptions.withType
+    const typeOnly = aOptions && aOptions.typeOnly
+
+    let result
+    if (withType) {
+      result = this.toTypeObject(aOptions)
+      if (!typeOnly) {
+        result.value = this._toObject(aOptions)
+      }
+    } else {
+      result = this._toObject(aOptions)
+    }
+
+    return result
   }
 
   /**
@@ -234,20 +294,18 @@ export class Type extends CustomFactory {
     return true
   }
 
-  error(aMessage, aOptions) {
-    const TheType = (this as any).Class || this.constructor
+  error(this: any, aMessage, aOptions) {
     const name: string =
       (aOptions && (this as any).$attributes.getValue(aOptions, 'name')) ||
-      String(TheType)
+      this.name
     this.errors?.push({ name, message: aMessage })
   }
 
-  validateRequired(aOptions?) {
+  validateRequired(this: any, aOptions?) {
     const result = this.isRequired(aOptions)
     if (!result) {
       if (aOptions?.raiseError !== false) {
-        const TheType = (this as any).Class || this.constructor
-        throw new TypeError('"' + String(TheType) + '" is required')
+        throw new TypeError('"' + this.name + '" is required')
       } else {
         this.error('is required', aOptions)
       }
@@ -261,7 +319,7 @@ export class Type extends CustomFactory {
     return result
   }
 
-  validate(aOptions?, raiseError?) {
+  validate(this: any, aOptions?, raiseError?) {
     let customValidate!: Function
     this.errors = []
     if (!aOptions && isObject(raiseError)) {
@@ -286,14 +344,11 @@ export class Type extends CustomFactory {
     if (result && isFunction(customValidate)) {
       result = customValidate.call(this, aOptions)
     }
-    if (result) {
+    if (result && aOptions.value != null) {
       result = this._validate(aOptions.value, aOptions)
     }
     if (raiseError !== false && !result) {
-      const TheType = (this as any).Class || this.constructor
-      throw new TypeError(
-        '"' + aOptions.value + '" is an invalid ' + String(TheType)
-      )
+      throw new TypeError('"' + aOptions.value + '" is an invalid ' + this.name)
     }
     return result
   }
@@ -302,7 +357,7 @@ export class Type extends CustomFactory {
     return this.validate(aOptions, false)
   }
 }
-properties(Type, { name: 'advance' })
+properties(Type, { name: 'advance', exclude: 'toObject' })
 
 export const register = Type.register.bind(Type)
 export const unregister = Type.unregister.bind(Type)
@@ -328,3 +383,24 @@ defineProperties(Type, {
     type: 'any',
   },
 })
+
+function addItemToArray(value: string | string[], items: string | string[] | undefined) {
+  if (typeof items === 'string') {
+    items = [items]
+  }
+
+  if (typeof value === 'string') {
+    value = [value]
+  }
+
+  if (Array.isArray(items)) {
+    value.forEach(item => {
+      if ((items as string[]).indexOf(item) === -1) {
+        (items as string[]).push(item)
+      }
+    })
+  } else {
+    items = value
+  }
+  return items
+}
