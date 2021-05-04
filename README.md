@@ -32,7 +32,8 @@ The abstract-type library includes the abstract `Type` class for streamable type
   * `required` *(boolean)*: the attribute whether is required(must be exists, not optional).
     default to false.
   * `value` : the actual value of this type.
-
+* Virtual Types:
+  * Url, telephone, Positive number
 
 ## Usage
 
