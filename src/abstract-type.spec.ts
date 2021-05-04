@@ -1,6 +1,48 @@
 import 'jest-extended'
-import { register, unregister, Type } from './abstract-type'
+import {
+  register,
+  unregister,
+  Type,
+  defineProperties,
+  addItemToArray,
+} from './abstract-type'
 import isInteger from 'util-ex/lib/is/type/integer'
+
+describe('addItemToArray func', () => {
+  it('items is an array', () => {
+    let items: string[] = []
+    items = addItemToArray('item', items)
+    expect(items).toEqual(['item'])
+    items = addItemToArray(undefined, items)
+    expect(items).toEqual(['item'])
+    items = addItemToArray(['1', '2'], items)
+    expect(items).toEqual(['item', '1', '2'])
+    items = addItemToArray(['1', '2'], items)
+    expect(items).toEqual(['item', '1', '2'])
+  })
+  it('items is a string', () => {
+    let items = 'internal'
+    items = addItemToArray('item', items)
+    expect(items).toEqual(['internal', 'item'])
+    items = addItemToArray(undefined, items)
+    expect(items).toEqual(['internal', 'item'])
+    items = addItemToArray(['1', '2'], items)
+    expect(items).toEqual(['internal', 'item', '1', '2'])
+    items = addItemToArray(['1', '2'], items)
+    expect(items).toEqual(['internal', 'item', '1', '2'])
+  })
+  it('items is undefined', () => {
+    let items = undefined
+    items = addItemToArray('item', items)
+    expect(items).toEqual(['item'])
+    items = addItemToArray(undefined, items)
+    expect(items).toEqual(['item'])
+    items = addItemToArray(['1', '2'], items)
+    expect(items).toEqual(['item', '1', '2'])
+    items = addItemToArray(['1', '2'], items)
+    expect(items).toEqual(['item', '1', '2'])
+  })
+})
 
 describe('AbstractType', () => {
   class NumberType extends Type {}
@@ -215,15 +257,55 @@ describe('AbstractType', () => {
       })
     })
     describe('toObject', () => {
+      class IntType extends NumberType {}
+
+      beforeAll(() => {
+        expect(NumberType.register(IntType, { alias: 'integer' })).toBeTrue()
+        defineProperties(IntType, {
+          min: {
+            type: 'Number',
+          },
+          max: {
+            type: 'Number',
+          },
+        })
+      })
+
+      afterAll(() => {
+        expect(unregister(IntType)).toBeTruthy()
+      })
+
       it('should convert value to json object!', () => {
         const result = new NumberType(12)
         expect(result.toObject()).toStrictEqual(12)
       })
-      it('should convert value to json object with type', () => {
-        const result = new NumberType(12)
+      it('should convert value to json object with type!', () => {
+        const result = new IntType(12, { min: 1, max: 3 })
         expect(result.toObject({ withType: true })).toEqual({
-          name: 'Number',
+          name: 'Int',
           value: 12,
+          min: 1,
+          max: 3,
+        })
+      })
+      it('should convert value to json object with type only', () => {
+        const result = new IntType(12, { min: 1, max: 3 })
+        expect(result.toObject({ typeOnly: true })).toEqual({
+          name: 'Int',
+          min: 1,
+          max: 3,
+        })
+      })
+      it('should convert value to json object with no type name', () => {
+        const result = new IntType(12, { min: 1, max: 3 })
+        expect(result.toObject({ typeOnly: true }, false)).toEqual({
+          min: 1,
+          max: 3,
+        })
+        expect(result.toTypeObject()).toEqual({
+          name: 'Int',
+          min: 1,
+          max: 3,
         })
       })
     })

@@ -243,18 +243,19 @@ export class Type extends CustomFactory {
     aNameRequired = true
   ) {
     const exclude = aNameRequired ? ['value'] : ['name', 'value']
+    /* istanbul ignore else */
     if (!aOptions) aOptions = {}
     aOptions.exclude = addItemToArray(exclude, aOptions.exclude)
     return this.exportTo({}, aOptions)
   }
 
   toObject(this: any, aOptions?, aNameRequired?: boolean) {
-    const withType = aOptions && aOptions.withType
     const typeOnly = aOptions && aOptions.typeOnly
+    const withType = typeOnly || (aOptions && aOptions.withType)
 
     let result
-    if (withType) {
-      result = this.toTypeObject(aOptions)
+    if (typeOnly || withType) {
+      result = this.toTypeObject(aOptions, aNameRequired)
       if (!typeOnly) {
         result.value = this._toObject(aOptions)
       }
@@ -384,7 +385,7 @@ defineProperties(Type, {
   },
 })
 
-function addItemToArray(value: string | string[], items: string | string[] | undefined) {
+export function addItemToArray(value: string | string[], items: string | string[] | undefined) {
   if (typeof items === 'string') {
     items = [items]
   }
@@ -394,7 +395,7 @@ function addItemToArray(value: string | string[], items: string | string[] | und
   }
 
   if (Array.isArray(items)) {
-    value.forEach(item => {
+    if (value) value.forEach(item => {
       if ((items as string[]).indexOf(item) === -1) {
         (items as string[]).push(item)
       }
