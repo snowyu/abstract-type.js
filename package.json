@@ -31,7 +31,6 @@
   "license": "MIT",
   "scripts": {
     "start": "nps",
-    "prepare": "npm i --no-save typedoc",
     "test": "nps test"
   },
   "engines": {
