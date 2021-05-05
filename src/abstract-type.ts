@@ -241,7 +241,7 @@ export class Type extends CustomFactory {
     let value = aValue.value
     if (value != null) {
       if (isFunction(TheType.toValue)) {
-        value = TheType.toValue(value, aOptions)
+        value = TheType.toValue(value, aOptions) ?? value
       } /* istanbul ignore else */ else if (isFunction(value.valueOf)) {
         value = value.valueOf()
       }
