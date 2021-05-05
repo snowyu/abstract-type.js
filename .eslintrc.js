@@ -3,7 +3,9 @@ const rules = {
   'no-explicit-any': 'off',
   'no-empty-function': 'off',
   'prefer-rest-params': 'off',
-  'prettier/prettier': 'error',
+  'arrow-body-style': 'off',
+  'prefer-arrow-callback': 'off',
+  'prettier/prettier': 'warn',
   '@typescript-eslint/explicit-module-boundary-types': 'off',
   '@typescript-eslint/no-unused-vars': 'warn',
   '@typescript-eslint/ban-types': 'off',
@@ -21,7 +23,7 @@ module.exports = {
     {
       files: ['*.ts', '*.tsx'],
       parser: '@typescript-eslint/parser',
-      plugins: ['prettier', '@typescript-eslint'],
+      plugins: ['@typescript-eslint', 'prettier'],
       extends: [
         'plugin:prettier/recommended',
         'eslint:recommended',

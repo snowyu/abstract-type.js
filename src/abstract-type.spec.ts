@@ -236,6 +236,15 @@ describe('AbstractType', () => {
         expect(() => result.assign(3.33)).toThrow('is an invalid')
       })
 
+      it('should validate another value', () => {
+        const result = new IntType(33)
+        expect(result.validate()).toBeTrue()
+        expect(result.validate(33.3, { raiseError: false })).toBeFalse()
+        expect(result.validate(33.3, false)).toBeFalse()
+        expect(() => result.validate(3.33)).toThrow('is an invalid')
+        expect(() => result.validate({ value: 3.33 })).toThrow('is an invalid')
+      })
+
       it('should validate a required value', () => {
         const result = new IntType(
           { value: 32.3, required: true },
