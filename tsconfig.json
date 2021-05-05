@@ -29,7 +29,7 @@
     "outDir": "types",
   },
   "typedocOptions": {
-    "entryPoints": ["src/index.js"],
+    "entryPoints": ["src/index.ts"],
     "out": "docs"
   },
   "exclude": ["**/*.spec.js", "**/*.test.js","**/*.spec.ts", "**/*.test.ts"]

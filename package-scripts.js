@@ -58,10 +58,10 @@ module.exports = {
     },
     doc: {
       description: 'generate the API Document',
-      default: series('nps build', 'nps doc.md'),
+      default: series('nps build', 'nps doc.html'),
       md: {
         description: 'generate the API Markdown Document',
-        script: series('npx typedoc'),
+        script: series('npx typedoc --out docs/api'),
       },
       html: {
         description: 'generate the API HTML Document',
