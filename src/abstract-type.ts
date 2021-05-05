@@ -218,7 +218,9 @@ export class Type extends CustomFactory {
     this._finalize(aOptions)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _finalize(aOptions?) {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _initialize(aValue?, aOptions?) {}
 
   assign(aValue, aOptions?, aExclude?) {
@@ -263,6 +265,7 @@ export class Type extends CustomFactory {
     return this.valueOf() + ''
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _toObject(aOptions?) {
     return this.valueOf()
   }
@@ -317,14 +320,14 @@ export class Type extends CustomFactory {
   }
 
   /* istanbul ignore next */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _validate(aValue, aOptions) {
     return true
   }
 
   error(this: any, aMessage, aOptions?) {
     const name: string =
-      (aOptions && this.$attributes.getValue(aOptions, 'name')) ||
-      this.name
+      (aOptions && this.$attributes.getValue(aOptions, 'name')) || this.name
     this.errors?.push({ name, message: aMessage })
   }
 

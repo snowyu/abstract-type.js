@@ -28,6 +28,7 @@
     ".coverage": true
   },
   "cSpell.ignoreWords": [
-    "lcov"
+    "lcov",
+    "typedoc"
   ]
 }

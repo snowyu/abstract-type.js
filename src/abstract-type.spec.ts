@@ -199,6 +199,7 @@ describe('AbstractType', () => {
       })
       it('should assign value with valueOf', () => {
         class A {
+          // eslint-disable-next-line no-unused-vars
           constructor(public value) {}
           valueOf() {
             return this.value
