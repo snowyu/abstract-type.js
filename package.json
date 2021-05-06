@@ -15,7 +15,8 @@
     "*.js",
     "test",
     "src",
-    "lib"
+    "lib",
+    "types"
   ],
   "keywords": [
     "type",
