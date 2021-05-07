@@ -50,11 +50,21 @@ export type ExportToFn = (this: Type, dest, options?: ITypeObjectOptions) => any
  */
 export class Type extends CustomFactory {
   declare static defineProperties: DefinePropertiesFn
+  /**
+   * get all property descriptors include inherited.
+   */
+  declare static getProperties: () => PropDescriptors
   declare static $attributes: Properties
+
+  declare static value: any
+  declare static required: boolean
+  declare static customValidate: undefined | ValidationFn
+
   declare name: string
   declare value: any
   declare required: boolean
   declare customValidate: undefined | ValidationFn
+
   declare Class: typeof Type
   declare $attributes: Properties
   declare getProperties: () => Properties
@@ -93,7 +103,7 @@ export class Type extends CustomFactory {
     const result = super.register(aClass, aParentClass, aOptions)
     /* istanbul ignore else */
     if (result) {
-      const vPrototype = this.prototype
+      const vPrototype = aClass.prototype
       const $attributes = vPrototype.$attributes
       if (!aOptions || isString(aOptions)) aOptions = {}
       $attributes.initializeTo(aClass, aOptions, { skipUndefined: true })
@@ -243,7 +253,7 @@ export class Type extends CustomFactory {
     let value = aValue.value
     if (value != null) {
       if (isFunction(TheType.toValue)) {
-        value = TheType.toValue(value, aOptions) ?? value
+        value = TheType.toValue(value, aValue) ?? value
       } /* istanbul ignore else */ else if (isFunction(value.valueOf)) {
         value = value.valueOf()
       }

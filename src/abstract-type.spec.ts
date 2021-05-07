@@ -144,6 +144,28 @@ describe('AbstractType', () => {
           expect(unregister(IntType)).toBeTruthy()
         }
       })
+
+      it('should register with specified properties with parent', () => {
+        class IntType extends NumberType {
+          declare static added: string
+          declare added: string
+        }
+        defineProperties(IntType, {
+          added: '321',
+        })
+        expect(
+          Type.register(IntType, { parent: NumberType, name: 'integer' })
+        ).toBeTrue()
+        try {
+          expect(IntType.prototype['name']).toStrictEqual('integer')
+          expect(IntType.added).toEqual('321')
+          const result = new IntType({ value: 23, required: true })
+          expect(result.added).toEqual('321')
+          expect(result.required).toBeTrue()
+        } finally {
+          expect(unregister(IntType)).toBeTruthy()
+        }
+      })
     })
     describe('.toString', () => {
       it('should return the registered type name', () => {
