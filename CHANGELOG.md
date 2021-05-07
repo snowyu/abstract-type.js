@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-alpha.4](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.3...v2.0.0-alpha.4) (2021-05-07)
+
+
+### Features
+
+* add static method toObject, toJSON to Type ([8f9fb4c](https://github.com/snowyu/abstract-type.js/commit/8f9fb4c75b5d5f45c9dbff19876216774f78bea8))
+
 ## [2.0.0-alpha.3](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.2...v2.0.0-alpha.3) (2021-05-07)
 
 
