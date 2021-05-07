@@ -173,6 +173,61 @@ describe('AbstractType', () => {
         expect(BooleanType.toString()).toStrictEqual('Boolean')
       })
     })
+    describe('.toObject', () => {
+      class IntType extends NumberType {}
+      defineProperties(IntType, {
+        min: { type: 'number', value: 1 },
+        max: { type: 'number', value: 3 },
+      })
+      beforeAll(() => {
+        expect(register(IntType, NumberType)).toBeTrue()
+      })
+      afterAll(() => {
+        expect(unregister(IntType)).toBeTrue()
+      })
+      it('should return the type info object', () => {
+        expect(IntType.toObject()).toEqual({ name: 'Int', min: 1, max: 3 })
+        expect(IntType.toObject({ skipDefault: true })).toEqual({ name: 'Int' })
+        const v = new IntType(2)
+        expect(v.toObject({ withType: true })).toEqual({
+          name: 'Int',
+          value: 2,
+        })
+        v.max = 10
+        expect(v.toObject({ withType: true })).toEqual({
+          name: 'Int',
+          value: 2,
+          max: 10,
+        })
+        expect(v.toObject({ withType: true, skipDefault: false })).toEqual({
+          name: 'Int',
+          value: 2,
+          min: 1,
+          max: 10,
+        })
+        v.max = undefined
+        expect(v.toObject({ withType: true, skipDefault: false })).toEqual({
+          name: 'Int',
+          value: 2,
+          min: 1,
+        })
+      })
+      it('should return the type info object with value', () => {
+        expect(IntType.toObject({ value: 2, typeOnly: false })).toEqual({
+          name: 'Int',
+          min: 1,
+          max: 3,
+          value: 2,
+        })
+      })
+      it('should convert type info to json object', () => {
+        expect(JSON.parse(JSON.stringify(IntType))).toEqual({
+          min: 1,
+          max: 3,
+          name: 'Int',
+        })
+      })
+    })
     describe('.tryGetTypeName', () => {
       it('should try get type name from value pure object', () => {
         expect(Type.tryGetTypeName({ value: 123 })).toStrictEqual('Number')

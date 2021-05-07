@@ -78,12 +78,12 @@ export class Type extends CustomFactory {
   declare toJSON: () => any
 
   declare static toValue: ToValueFn
+  declare errors: null | IErrorMessage[]
 
   /**
    * the root name
    */
   static ROOT_NAME = 'type'
-  errors: null | IErrorMessage[] = null
 
   static register(aClass, aOptions?: string | ITypeOptions): boolean
   static register(
@@ -159,6 +159,27 @@ export class Type extends CustomFactory {
   static toString(): string {
     /* istanbul ignore next */
     return this.prototype.name || this.name
+  }
+
+  static toObject(aOptions?, aNameRequired?: boolean) {
+    const v = new this(undefined, aOptions)
+    if (!aOptions) aOptions = {}
+    aOptions.withType = true
+    if (aOptions.typeOnly == null) aOptions.typeOnly = true
+    if (aOptions.skipDefault == null) aOptions.skipDefault = false
+    const result = v.toObject(aOptions, aNameRequired)
+    if (
+      aOptions &&
+      aOptions.typeOnly === false &&
+      aOptions.value !== undefined
+    ) {
+      result.value = aOptions.value
+    }
+    return result
+  }
+
+  static toJSON() {
+    return this.toObject()
   }
 
   // static createType(aType?, aOptions?): typeof Type {
