@@ -32,7 +32,8 @@
   "license": "MIT",
   "scripts": {
     "start": "nps",
-    "test": "nps test"
+    "test": "nps test",
+    "test-cov": "nps test.cov"
   },
   "engines": {
     "node": ">=8"
