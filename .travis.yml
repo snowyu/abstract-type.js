@@ -13,8 +13,7 @@ before_script:
 - "./cc-test-reporter before-build"
 script: npm run-script test-cov
 after_success:
-- test -e ./coverage/lcov.info && ./cc-test-reporter format-coverage -t lcov ./coverage/lcov.info
-  && ./cc-test-reporter upload-coverage
+- test -e ./.coverage/lcov.info && ./cc-test-reporter format-coverage -t lcov ./.coverage/lcov.info && ./cc-test-reporter upload-coverage
 notifications:
   email:
   - snowyu.lee@gmail.com
