@@ -1,22 +1,23 @@
 language: node_js
 node_js:
-  - "10"
-  - "11"
-  - "12"
-  - "13"
-  - "14"
+- '10'
+- '11'
+- '12'
+- '13'
+- '14'
 before_install:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+  > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
 before_script:
-  - ./cc-test-reporter before-build
+- "./cc-test-reporter before-build"
 script: npm run-script test-cov
 after_success:
-  - test -e ./coverage/lcov.info && ./cc-test-reporter format-coverage -t lcov ./coverage/lcov.info && ./cc-test-reporter upload-coverage
+- test -e ./coverage/lcov.info && ./cc-test-reporter format-coverage -t lcov ./coverage/lcov.info
+  && ./cc-test-reporter upload-coverage
 notifications:
   email:
-    - snowyu.lee@gmail.com
-addons:
-  code_climate:
-    repo_token:
-      secure: "GJ9O8fm0P65385r0oRyvLxBPiyrQF1zOgB15u0IuNzEXp8xxg7t7LU5rmQd/K1FoF5bsGsy5jQ/0P3TplH4pQObS2WmJLiK82ikY9wLdoC6HTBJOXRsKL7tfUrpeDTlW1o7/qvkVDkxFD7+D9sWkL/MLZURD2531q1Qt+DWe8YPWsqxOM+N3EZCyhMtTguCq2FtYaZAzu7nzoKgbwifau76c+4J5dl9EQgK7QRE8Ojc4vjFakDcRhqNABZ9WMptcEIIRv8sZMssHMmSB1vhVVvPvfT+OLFG7mVOYabm7MEMbq9QlLwzU31gP6GxEwCY1duQU04LrZM+DBJslPDGvw8SiSX7NBXfWwbAQ8bcHMixavNQHflCxKUI3uuqn/vm4J6i1a216kImqz8a/wyU54hIRpOYYAx3NzGapATV7/znMWsbin88Bsn5Y7PAVa3YpBqF1z63uBs+fwPkFx8fq0W+7mbm2WSW5bH1laVYPnNRnUBmXAnaxUQPwSqZZPNQ/hA46omLlV/xI7Km8ZkuwVoUy1znPj0Ldt5fD+Ebv1aUNnxoGEjuxMliUe9Rqlf0lsjKIn2/Ip4lKdHAKXQNzGgrUrdDXfp3Ps4E6ic3fq+qZ49krSXmBG54XYALpsq7jiz4maHP8UqWQxMURG6kRO8W6ezQQ7dy1bTxFUAxEG10="
+  - snowyu.lee@gmail.com
+env:
+  global:
+    secure: t/tlr+wxdcRTRhdtwGHwREWWfTfZTTDjkcbMzRbmnDD39SS97LKGHZvqJvB2Z1I5HZ7qmPHJeBTCs0jwtM0i1gnySuXzQy6ACbO3jL7ndHWRhXW9QFyDM5zPQSgweVwjULNnVZ5Ro86bnBr196q7kAdZvD9et4W2S/JxGrhNBHuwUaPmWcVyTcAIgIea1Cu55Y0CoWyf0BoUbWXONv51AaQcBd4Z6CFr0qEWyDh84XRIhW0c8Rr13/Pnl+RCp8g4bxi2EYsz00sxCCRTJ1mHx/0apHZsNcRHN5xLi7b28XCP1gDAM11S7bSrkXwB+/8i9q+QdWM2LOtbMKO5INpECV3GmNSbjubGsWwK1daCYHWrcIZyafjxH06iqUuS7H3iqGEc6cCvXqRVedSzmrRxRArv2nMfzjcdl/8duUu3XUTrsWKFLEWJhSm/WEJ/YR/SOkZc1LCAPYV8VT3WI5AIg7kZ3uFEaDC3Xrhvy3ZoUA7s5B6atmCcL/FuvijDwcCKUjH0PUO/1z4XUHeGcECBQjqiHXOIQ3G5JKRWFHIHpgM5DmgswhcbCgfaGxGxn1NtNw93P0m0r1+kB9yyLW5B4Ry6trlaO774i2BPTKp1HTIbmxQMy0lZmRipUI1HZNlSO60WUSLAKNlcxsSSGLWcqP3HqrSf8oDI39dWWKvn6w0=
