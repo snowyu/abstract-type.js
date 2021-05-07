@@ -39,21 +39,35 @@ The abstract-type library includes the abstract `Type` class for streamable type
 
 ### Create the number type
 
-The type has a name and can verify whether a value belongs to that type.
+The type has a name and can verify whether a value belongs to that type, and serialize(deserialize) type and value.
 We can draw the two concepts related to the type, from here:
 
 * Attributes: the attributes(meta data) of this type.
 * Value: the value of this type.
 
 * The Type Class
-  * Properties:
-    * $attributes *(object)*: the attributes of this type.
+  * Static Members:
+    * Properties:
+      * `$attributes` *(Properties)*: the attributes of this type.
+      * `value`: optional the default value if any
+      * `required` *(Boolean)*: whether it's required(MUST HAVE).
+      * `customValidate` *(value: any, options?)=>boolean*: callback function
+    * Methods:
+      * `getProperties(): PropDescriptors`
+  * Instance Members:
+    * Properties:
+      * `$attributes` *(object)*: the attributes of this type.
+      * `value`: store the value here.
   * Methods(should be overridden):
     * `_initialize(aOptions)`: initialize the type object.
     * `_assign(options)`: assign an options of type to itself.
     * `_validate(aValue, aOptions)`: validate a value whether is valid.
     * `valueToString(aValue)`: (optional) convert the value to string, it's used to convert to json.
     * `toValue(aString)`: (optional) convert the string to the value, it's used to convert from json and assign from value.
+    * `clone()`: clone this value object.
+    * `assign(value, options)`: assign the value.
+      * `aOptions` *(object)*:
+        * `checkValidity` *(boolean)*: defaults to true.
 
 * The Value Class
   * Properties:
