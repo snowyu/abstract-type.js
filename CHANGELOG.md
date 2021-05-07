@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-alpha.3](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.2...v2.0.0-alpha.3) (2021-05-07)
+
+
+### Bug Fixes
+
+* defined properties with default value should be on the Type ([a196150](https://github.com/snowyu/abstract-type.js/commit/a19615042239470637f78f580df44cd33d433432))
+
 ## [2.0.0-alpha.2](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.1...v2.0.0-alpha.2) (2021-05-07)
 
 ## [2.0.0-alpha.1](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.0...v2.0.0-alpha.1) (2021-05-06)
