@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-alpha.6](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.5...v2.0.0-alpha.6) (2021-05-08)
+
+
+### Bug Fixes
+
+* should initializeTo instance after creating object ([d83fc28](https://github.com/snowyu/abstract-type.js/commit/d83fc285f71c51490f38a8f0e398c095d735603b))
+
 ## [2.0.0-alpha.5](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2021-05-08)
 
 
