@@ -17,7 +17,7 @@
 [codeclimate-test-svg]: https://codeclimate.com/github/snowyu/abstract-type.js/badges/coverage.svg
 [codeclimate-test]: https://codeclimate.com/github/snowyu/abstract-type.js/coverage
 
-The abstract-type library includes the abstract `Type` class for streamable type info and validating value.
+The abstract-type library includes the abstract `Type` class for serializing/deserializing type info and validating value.
 
 ## Concepts
 
@@ -110,50 +110,64 @@ We can draw the two concepts related to the type, from here:
     from src[`key`] to dest[`key`].
     * src, dest: the type object or the parametric type object.
 
-```coffee
-TypeAttributes    = require 'abstract-type/lib/attributes'
-Type              = require 'abstract-type'
-register          = Type.register
-aliases           = Type.aliases
+Notes:
 
-class NumberType
-  register NumberType
-  aliases NumberType, 'number'
+* Serialize `Type` Class and instance will not export the default value of attributes
+  * `skipDefault=false` if you wanna export the default value of attributes
 
-  $attributes: TypeAttributes
-    min:
-      name: 'min'
-      type: 'Number'
-    max:
-      name: 'max'
-      type: 'Number'
+```typescript
+import { Type, register, defineProperties } from 'abstract-type'
 
-  #valueToString: (aValue)->
-  #  aValue = String(aValue)
-  stringToValue: (aString)->
-    if isInt aString
-      aString = parseInt(aString)
-    else if isFloat aString
-      aString = parseFloat(aString)
-    else
-      aString = undefined
-    aString
-  _validate: (aValue, aOptions)->
-    aValue = @stringToValue(aValue) if isString aValue
-    result = isNumber aValue
-    if result
-      if aOptions
-        vMin = aOptions.min
-        vMax = aOptions.max
-        if vMin?
-          result = aValue >= vMin
-          if not result
-            @error "should be equal or greater than minimum value: " + vMin
-        if result and vMax?
-          result = aValue <= vMax
-          if not result
-            @error "should be equal or less than maximum value: " + vMax
-    result
+export class NumberType extends Type {
+  static toValue(aValue): number | undefined {
+    if (!isNaN(aValue)) aValue = Number(aValue)
+    else aValue = undefined
+    return aValue
+  }
+
+  declare static min: number | undefined
+  declare static max: number | undefined
+  declare min: number | undefined
+  declare max: number | undefined
+
+  _isValid(value) {
+    return isNumber(value)
+  }
+
+  _validate(aValue, aOptions) {
+    const TheType = this['Class'] || this.constructor
+    if (typeof aValue === 'string') aValue = TheType.toValue(aValue)
+    let result = this._isValid(aValue)
+    if (result) {
+      const vMin = aOptions.min
+      const vMax = aOptions.max
+      if (vMin != null) {
+        result = aValue >= vMin
+        if (!result) {
+          this.error('should be equal or greater than minimum value: ' + vMin)
+        }
+      }
+      if (result && vMax != null) {
+        result = aValue <= vMax
+        if (result) {
+          this.error('should be equal or less than maximum value: ' + vMax)
+        }
+      }
+    }
+    return result
+  }
+}
+
+defineProperties(NumberType, {
+  min: {
+    type: 'Number',
+  },
+  max: {
+    type: 'Number',
+  },
+})
+
+register(NumberType)
 ```
 
 ### Use the number type

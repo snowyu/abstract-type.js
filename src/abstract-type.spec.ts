@@ -46,6 +46,11 @@ describe('addItemToArray func', () => {
 
 describe('AbstractType', () => {
   class NumberType extends Type {}
+  defineProperties(NumberType, {
+    min: { type: 'number' },
+    max: { type: 'number' },
+  })
+
   class BooleanType extends Type {
     static toValue(value) {
       if (value.valueOf) value = value.valueOf()
@@ -117,7 +122,10 @@ describe('AbstractType', () => {
           expect(AType).toHaveProperty('required', true)
           const result = new AType(12)
           expect(init.mock.calls.length).toBe(1)
-          expect(init.mock.calls[0]).toEqual([12, undefined])
+          expect(init.mock.calls[0]).toEqual([
+            12,
+            { required: true, overwrite: true, isExported: false },
+          ])
           expect(result).toBeInstanceOf(Type)
           expect(result).toHaveProperty('required', true)
         } finally {
@@ -174,24 +182,37 @@ describe('AbstractType', () => {
       })
     })
     describe('.toObject', () => {
-      class IntType extends NumberType {}
+      class IntType extends NumberType {
+        // static min = 1
+        static max = 4
+      }
       defineProperties(IntType, {
         min: { type: 'number', value: 1 },
         max: { type: 'number', value: 3 },
       })
+
+      class PositiveType extends IntType {
+        static min = 0
+      }
+
       beforeAll(() => {
         expect(register(IntType, NumberType)).toBeTrue()
       })
       afterAll(() => {
         expect(unregister(IntType)).toBeTrue()
       })
-      it('should return the type info object', () => {
-        expect(IntType.toObject()).toEqual({ name: 'Int', min: 1, max: 3 })
-        expect(IntType.toObject({ skipDefault: true })).toEqual({ name: 'Int' })
-        const v = new IntType(2)
+      it('should return the type info object!', () => {
+        expect(IntType.toObject()).toEqual({ name: 'Int', max: 4 })
+        expect(IntType.toObject({ skipDefault: false })).toEqual({
+          name: 'Int',
+          min: 1,
+          max: 4,
+        })
+        let v = new IntType(2)
         expect(v.toObject({ withType: true })).toEqual({
           name: 'Int',
           value: 2,
+          max: 4,
         })
         v.max = 10
         expect(v.toObject({ withType: true })).toEqual({
@@ -211,19 +232,25 @@ describe('AbstractType', () => {
           value: 2,
           min: 1,
         })
+        expect(PositiveType.toObject()).toEqual({ name: 'Int', min: 0, max: 4 })
+        v = new PositiveType(3)
+        expect(v.toObject({ withType: true })).toEqual({
+          name: 'Int',
+          value: 3,
+          max: 4,
+          min: 0,
+        })
       })
       it('should return the type info object with value', () => {
         expect(IntType.toObject({ value: 2, typeOnly: false })).toEqual({
           name: 'Int',
-          min: 1,
-          max: 3,
+          max: 4,
           value: 2,
         })
       })
       it('should convert type info to json object', () => {
         expect(JSON.parse(JSON.stringify(IntType))).toEqual({
-          min: 1,
-          max: 3,
+          max: 4,
           name: 'Int',
         })
       })
@@ -348,14 +375,6 @@ describe('AbstractType', () => {
 
       beforeAll(() => {
         expect(NumberType.register(IntType, { alias: 'integer' })).toBeTrue()
-        defineProperties(IntType, {
-          min: {
-            type: 'Number',
-          },
-          max: {
-            type: 'Number',
-          },
-        })
       })
 
       afterAll(() => {

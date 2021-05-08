@@ -166,7 +166,7 @@ export class Type extends CustomFactory {
     if (!aOptions) aOptions = {}
     aOptions.withType = true
     if (aOptions.typeOnly == null) aOptions.typeOnly = true
-    if (aOptions.skipDefault == null) aOptions.skipDefault = false
+    // if (aOptions.skipDefault == null) aOptions.skipDefault = false
     const result = v.toObject(aOptions, aNameRequired)
     if (
       aOptions &&
@@ -229,16 +229,14 @@ export class Type extends CustomFactory {
   /**
    * @internal
    */
-  initialize(aValue?, aOptions?) {
+  initialize(aValue?, aOptions = {}) {
+    // aOptions = aOptions == null ? {} : Object.assign({}, aOptions)
     defineProperty(this, 'errors', null)
     const TheType = this.Class || this.constructor
     const $attributes = this.$attributes
-    /* istanbul ignore else */
-    if ($attributes) {
-      $attributes.initializeTo(this, TheType)
-    }
+    $attributes.initializeTo(aOptions, TheType, { skipUndefined: true })
     this._initialize(aValue, aOptions)
-    if (aValue !== undefined || aOptions != null) this.assign(aValue, aOptions)
+    this.assign(aValue, aOptions)
     return 'ok'
   }
 
