@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-alpha.5](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2021-05-08)
+
+
+### Bug Fixes
+
+* should follow the skipDefault = true option ([e4b5809](https://github.com/snowyu/abstract-type.js/commit/e4b58094c80db767477cd740b66c25a9cb1b8a01))
+
 ## [2.0.0-alpha.4](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.3...v2.0.0-alpha.4) (2021-05-07)
 
 
