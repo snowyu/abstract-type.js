@@ -272,6 +272,19 @@ describe('AbstractType', () => {
         })
       })
     })
+    describe('.inspect()', () => {
+      class IntType extends NumberType {
+        min = 1
+        max = 6
+      }
+      it('should inspect type', () => {
+        expect(BooleanType.inspect()).toStrictEqual('<type "Boolean">')
+        expect(NumberType.inspect()).toStrictEqual('<type "Number">')
+        expect(IntType.inspect()).toStrictEqual(
+          '<type "Number": "min":1,"max":6>'
+        )
+      })
+    })
     describe('.tryGetTypeName', () => {
       it('should try get type name from value pure object', () => {
         expect(Type.tryGetTypeName({ value: 123 })).toStrictEqual('Number')
@@ -430,6 +443,24 @@ describe('AbstractType', () => {
           min: 1,
           max: 3,
         })
+      })
+    })
+    describe('inspect()', () => {
+      class IntType extends NumberType {
+        min = 1
+        max = 6
+      }
+      it('should inspect type', () => {
+        expect(new BooleanType().inspect()).toStrictEqual('<type "Boolean">')
+        expect(new BooleanType(true).inspect()).toStrictEqual(
+          '<type "Boolean": "value":true>'
+        )
+        expect(new NumberType({ max: 5, min: 2 }).inspect()).toStrictEqual(
+          '<type "Number": "min":2,"max":5>'
+        )
+        expect(new IntType(5).inspect()).toStrictEqual(
+          '<type "Number": "min":1,"max":6,"value":5>'
+        )
       })
     })
   })

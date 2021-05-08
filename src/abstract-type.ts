@@ -162,7 +162,7 @@ export class Type extends CustomFactory {
     return this.prototype.name || this.name
   }
 
-  static toObject(aOptions?, aNameRequired?: boolean) {
+  static toObject(aOptions?: ITypeObjectOptions, aNameRequired?: boolean) {
     const v = new this(undefined, aOptions)
     if (!aOptions) aOptions = {}
     aOptions.withType = true
@@ -183,6 +183,12 @@ export class Type extends CustomFactory {
     return this.toObject()
   }
 
+  static inspect() {
+    const v = JSON.stringify(this.toObject({ exclude: 'name' })).slice(1, -1)
+    const result =
+      '<type ' + '"' + this.prototype.name + '"' + (v ? ': ' + v : '') + '>'
+    return result
+  }
   // static createType(aType?, aOptions?): typeof Type {
   //   if (isPureObject(aType)) {
   //     aOptions = aType
@@ -325,6 +331,24 @@ export class Type extends CustomFactory {
     }
 
     return result
+  }
+
+  toJson(aOptions?: ITypeObjectOptions, aNameRequired?: boolean) {
+    let result = this.toObject(aOptions, aNameRequired)
+    result = JSON.stringify(result)
+    console.log('TCL:: ~ file: abstract-type.ts ~ line 333 ~ Type ~ toJson ~ result', result);
+    return result
+  }
+
+  _inspect(aOptions?: ITypeObjectOptions, aNameRequired = false) {
+    let result = '"' + this.name + '"'
+    const vAttrs = this.toJson(aOptions, aNameRequired).slice(1, -1)
+    if (vAttrs) result += ': ' + vAttrs
+    return result
+  }
+
+  inspect() {
+    return '<type ' + this._inspect({ withType: true }) + '>'
   }
 
   /**
