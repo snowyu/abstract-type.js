@@ -26,6 +26,7 @@ export interface ITypeOptions extends IBaseFactoryOptions {
 
 export interface ITypeObjectOptions extends IMergeOptions {
   typeOnly?: boolean
+  raiseError?: boolean
   [key: string]: any
 }
 
@@ -229,7 +230,7 @@ export class Type extends CustomFactory {
   /**
    * @internal
    */
-  initialize(aValue?, aOptions = {}) {
+  initialize(aValue?, aOptions: ITypeObjectOptions = {}) {
     // aOptions = aOptions == null ? {} : Object.assign({}, aOptions)
     defineProperty(this, 'errors', null)
     const TheType = this.Class || this.constructor
@@ -254,7 +255,7 @@ export class Type extends CustomFactory {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _initialize(aValue?, aOptions?) {}
 
-  assign(aValue, aOptions?, aExclude?) {
+  assign(aValue, aOptions?: ITypeObjectOptions, aExclude?: string | string[]) {
     this.errors = []
     if (!aOptions) aOptions = {}
     const checkValidity = aOptions.checkValidity
@@ -297,11 +298,11 @@ export class Type extends CustomFactory {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _toObject(aOptions?) {
+  _toObject(aOptions?: ITypeObjectOptions) {
     return this.valueOf()
   }
 
-  toTypeObject(this: any, aOptions?: ITypeObjectOptions, aNameRequired = true) {
+  toTypeObject(aOptions?: ITypeObjectOptions, aNameRequired = true) {
     const exclude = aNameRequired ? ['value'] : ['name', 'value']
     /* istanbul ignore else */
     if (!aOptions) aOptions = {}
@@ -309,7 +310,7 @@ export class Type extends CustomFactory {
     return this.exportTo({}, aOptions)
   }
 
-  toObject(this: any, aOptions?, aNameRequired?: boolean) {
+  toObject(aOptions?: ITypeObjectOptions, aNameRequired?: boolean) {
     const typeOnly = aOptions && aOptions.typeOnly
     const withType = typeOnly || (aOptions && aOptions.withType)
 
@@ -331,20 +332,20 @@ export class Type extends CustomFactory {
    * @param aOptions
    * @returns
    */
-  isRequired(aOptions?) {
-    if (!isObject(aOptions)) {
-      aOptions = this
-    } else {
-      aOptions = this.mergeTo(aOptions, {
-        skipNull: true,
-        skipUndefined: true,
-        exclude: 'name',
-      })
-    }
-    return this._isRequired(aOptions.value, aOptions)
+  isRequired(aOptions?: ITypeObjectOptions) {
+    aOptions =
+      typeof aOptions !== 'object'
+        ? this
+        : this.mergeTo(aOptions, {
+            skipNull: true,
+            skipUndefined: true,
+            exclude: 'name',
+          })
+
+    return this._isRequired(aOptions!.value, aOptions!)
   }
 
-  _isRequired(aValue, aOptions) {
+  _isRequired(aValue, aOptions: ITypeObjectOptions) {
     const vRequired = this.$attributes.getValue(aOptions, 'required')
     const result = !vRequired || (vRequired === true && aValue != null)
     return result
@@ -352,17 +353,17 @@ export class Type extends CustomFactory {
 
   /* istanbul ignore next */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _validate(aValue, aOptions) {
+  _validate(aValue, aOptions: ITypeObjectOptions) {
     return true
   }
 
-  error(this: any, aMessage, aOptions?) {
+  error(aMessage, aOptions?) {
     const name: string =
       (aOptions && this.$attributes.getValue(aOptions, 'name')) || this.name
     this.errors?.push({ name, message: aMessage })
   }
 
-  validateRequired(aOptions?) {
+  validateRequired(aOptions?: ITypeObjectOptions) {
     const result = this.isRequired(aOptions)
     if (!result) {
       if (aOptions?.raiseError !== false) {
@@ -374,14 +375,17 @@ export class Type extends CustomFactory {
     return result
   }
 
-  _validateRequired(aValue, aOptions) {
+  _validateRequired(aValue, aOptions: ITypeObjectOptions) {
     const result = this._isRequired(aValue, aOptions)
     if (!result) this.error('is required', aOptions)
     return result
   }
 
   // validate(aValue, aOptions|raiseError?)
-  validate(this: any, aOptions?, raiseError?) {
+  validate(
+    aOptions?: ITypeObjectOptions | any,
+    raiseError?: ITypeObjectOptions | boolean
+  ) {
     let customValidate!: Function
     this.errors = []
     if (aOptions != null) {
@@ -423,7 +427,7 @@ export class Type extends CustomFactory {
     return result
   }
 
-  isValid(aOptions?) {
+  isValid(aOptions?: ITypeObjectOptions) {
     return this.validate(aOptions, false)
   }
 }
