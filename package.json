@@ -1,7 +1,7 @@
 {
   "name": "abstract-type",
   "description": "The abstract-type library includes the abstract `Type` class for streamable type info and validating value.",
-  "version": "2.0.0-alpha.6",
+  "version": "2.0.0-alpha.7",
   "homepage": "https://github.com/snowyu/abstract-type.js",
   "repository": {
     "type": "git",

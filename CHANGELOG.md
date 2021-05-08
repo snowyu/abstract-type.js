@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-alpha.7](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.6...v2.0.0-alpha.7) (2021-05-08)
+
+
+### Bug Fixes
+
+* **ts:** add more ts types instead of any ([9b37894](https://github.com/snowyu/abstract-type.js/commit/9b3789435237e6960d00334943dcdc56dbbaff43))
+
 ## [2.0.0-alpha.6](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.5...v2.0.0-alpha.6) (2021-05-08)
 
 
