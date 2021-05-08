@@ -47,8 +47,20 @@ describe('addItemToArray func', () => {
 describe('AbstractType', () => {
   class NumberType extends Type {}
   defineProperties(NumberType, {
-    min: { type: 'number' },
-    max: { type: 'number' },
+    min: {
+      type: 'Number',
+      assigned: '_min',
+      assign(value) {
+        return value
+      },
+    },
+    max: {
+      type: 'Number',
+      assigned: '_max',
+      assign(value) {
+        return value
+      },
+    },
   })
 
   class BooleanType extends Type {
@@ -104,6 +116,11 @@ describe('AbstractType', () => {
     it('should throw error if can not determine the value type', () => {
       expect(() => new Type(null)).toThrow('can not determine the value type')
       expect(() => new Type({})).toThrow('can not determine the value type')
+    })
+    it('should create number value with range options', () => {
+      const result = new NumberType({ min: 2, max: 10 })
+      expect(result).toHaveProperty('_min', 2)
+      expect(result).toHaveProperty('_max', 10)
     })
   })
 

@@ -234,7 +234,9 @@ export class Type extends CustomFactory {
     defineProperty(this, 'errors', null)
     const TheType = this.Class || this.constructor
     const $attributes = this.$attributes
+    // merge the options from TheType
     $attributes.initializeTo(aOptions, TheType, { skipUndefined: true })
+    $attributes.initializeTo(this, aOptions)
     this._initialize(aValue, aOptions)
     this.assign(aValue, aOptions)
     return 'ok'
