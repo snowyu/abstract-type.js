@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-alpha.8](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.7...v2.0.0-alpha.8) (2021-05-08)
+
+
+### Features
+
+* add inpsect/toJson methods ([d7f931d](https://github.com/snowyu/abstract-type.js/commit/d7f931df6c4a3e1e140b112f61ba9401c7492f90))
+
 ## [2.0.0-alpha.7](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.6...v2.0.0-alpha.7) (2021-05-08)
 
 
