@@ -239,8 +239,13 @@ export class Type extends CustomFactory {
   initialize(aValue?, aOptions: ITypeObjectOptions = {}) {
     // aOptions = aOptions == null ? {} : Object.assign({}, aOptions)
     defineProperty(this, 'errors', null)
-    const TheType = this.Class || this.constructor
+    const TheType = this.constructor
     const $attributes = this.$attributes
+    if (isPureObject(aValue)) {
+      Object.assign(aOptions, aValue)
+      aValue = aValue.value
+      delete aOptions.value
+    }
     // merge the options from TheType
     $attributes.initializeTo(aOptions, TheType, { skipUndefined: true })
     $attributes.initializeTo(this, aOptions)
@@ -265,7 +270,7 @@ export class Type extends CustomFactory {
     this.errors = []
     if (!aOptions) aOptions = {}
     const checkValidity = aOptions.checkValidity
-    const TheType = this.Class || this.constructor
+    const TheType = this.constructor
 
     if (aValue instanceof Type) {
       aValue = aValue.toObject({ withType: true })
@@ -336,7 +341,6 @@ export class Type extends CustomFactory {
   toJson(aOptions?: ITypeObjectOptions, aNameRequired?: boolean) {
     let result = this.toObject(aOptions, aNameRequired)
     result = JSON.stringify(result)
-    console.log('TCL:: ~ file: abstract-type.ts ~ line 333 ~ Type ~ toJson ~ result', result);
     return result
   }
 
@@ -413,7 +417,7 @@ export class Type extends CustomFactory {
     let customValidate!: Function
     this.errors = []
     if (aOptions != null) {
-      if (!(aOptions instanceof Type) && !isPureObject(aOptions)) {
+      if (!isPureObject(aOptions)) {
         aOptions = { value: aOptions }
       }
     } else {

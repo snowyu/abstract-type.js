@@ -191,6 +191,20 @@ describe('AbstractType', () => {
           expect(unregister(IntType)).toBeTruthy()
         }
       })
+      it('should create parameterized type', () => {
+        class Positive extends NumberType {
+          static min = 6
+          _validate(value, aOptions) {
+            let result = !(value < aOptions.min)
+            if (result) result = !(value > aOptions.max)
+            return result
+          }
+        }
+        const result = new Positive(8)
+        expect(result).toHaveProperty('min', 6)
+        expect(result.isValid()).toBeTrue()
+        expect(result.validate(-1, false)).toBeFalse()
+      })
     })
     describe('.toString', () => {
       it('should return the registered type name', () => {
@@ -348,8 +362,15 @@ describe('AbstractType', () => {
 
     describe('validate', () => {
       class IntType extends NumberType {
-        _validate(value) {
-          return isInteger(value)
+        _validate(value, aOptions) {
+          let result = isInteger(value)
+          if (result && aOptions.min != null) {
+            result = value >= aOptions.min
+          }
+          if (result && aOptions.max != null) {
+            result = value <= aOptions.max
+          }
+          return result
         }
       }
 
@@ -372,12 +393,23 @@ describe('AbstractType', () => {
       })
 
       it('should validate another value', () => {
-        const result = new IntType(33)
+        const result = new IntType(33, { min: 33 })
         expect(result.validate()).toBeTrue()
         expect(result.validate(33.3, { raiseError: false })).toBeFalse()
         expect(result.validate(33.3, false)).toBeFalse()
+        expect(result.validate(31, false)).toBeFalse()
         expect(() => result.validate(3.33)).toThrow('is an invalid')
         expect(() => result.validate({ value: 3.33 })).toThrow('is an invalid')
+      })
+      it('should validate another Type data', () => {
+        const result = new IntType(33, { min: 33})
+        expect(
+          result.validate(new NumberType(40.2), { raiseError: false })
+        ).toBeFalse()
+        expect(() => result.validate({ value: new NumberType(42.2) })).toThrow(
+          'is an invalid'
+        )
+        expect(result.validate(new NumberType(20), false)).toBeFalse()
       })
 
       it('should validate a required value', () => {
@@ -451,10 +483,10 @@ describe('AbstractType', () => {
         max = 6
       }
       it('should inspect type', () => {
-        expect(new BooleanType().inspect()).toStrictEqual('<type "Boolean">')
-        expect(new BooleanType(true).inspect()).toStrictEqual(
-          '<type "Boolean": "value":true>'
-        )
+        // expect(new BooleanType().inspect()).toStrictEqual('<type "Boolean">')
+        // expect(new BooleanType(true).inspect()).toStrictEqual(
+        //   '<type "Boolean": "value":true>'
+        // )
         expect(new NumberType({ max: 5, min: 2 }).inspect()).toStrictEqual(
           '<type "Number": "min":2,"max":5>'
         )
