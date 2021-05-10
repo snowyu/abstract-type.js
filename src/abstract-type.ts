@@ -437,7 +437,7 @@ export class Type extends CustomFactory {
     aOptions = this.mergeTo(aOptions, {
       skipNull: true,
       skipUndefined: true,
-      exclude: 'name',
+      exclude: aOptions.value != null ? ['name', 'value'] : 'name',
     })
     if (!customValidate) customValidate = aOptions.customValidate
     // if (raiseError !== false) aOptions.raiseError = true
