@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-alpha.9](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.8...v2.0.0-alpha.9) (2021-05-10)
+
+
+### Bug Fixes
+
+* parameterized type(without register) should get attributes correctly ([11bfc84](https://github.com/snowyu/abstract-type.js/commit/11bfc8444e7697c96bab5d193dd81e51ecb97d07))
+* validate value was overwrited this.value wrongly ([a003c43](https://github.com/snowyu/abstract-type.js/commit/a003c43feb7ce7d3f6c1d458dc039a577a0afa15))
+
 ## [2.0.0-alpha.8](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.7...v2.0.0-alpha.8) (2021-05-08)
 
 
