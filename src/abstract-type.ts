@@ -270,7 +270,7 @@ export class Type extends CustomFactory {
     this.errors = []
     if (!aOptions) aOptions = {}
     const checkValidity = aOptions.checkValidity
-    const TheType = this.constructor
+    const TheType = this.constructor as typeof Type
 
     if (aValue instanceof Type) {
       aValue = aValue.toObject({ withType: true })
