@@ -27,6 +27,7 @@ export interface ITypeOptions extends IBaseFactoryOptions {
 export interface ITypeObjectOptions extends IMergeOptions {
   typeOnly?: boolean
   raiseError?: boolean
+  assigned?: boolean
   [key: string]: any
 }
 
@@ -261,8 +262,11 @@ export class Type extends CustomFactory {
     this._finalize(aOptions)
   }
 
+  /* istanbul ignore next */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _finalize(aOptions?) {}
+  _finalize(aOptions?) {
+    this.value = undefined
+  }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _initialize(aValue?, aOptions?) {}
 
@@ -276,6 +280,8 @@ export class Type extends CustomFactory {
       aValue = aValue.toObject({ withType: true })
     } else if (!isPureObject(aValue)) {
       aValue = { value: aValue }
+    } else {
+      aValue = Object.assign({}, aValue)
     }
 
     const $attributes = this.$attributes
@@ -286,6 +292,7 @@ export class Type extends CustomFactory {
     let value = aValue.value
     if (value != null) {
       if (isFunction(TheType.toValue)) {
+        aValue.assigned = true
         value = TheType.toValue(value, aValue) ?? value
       } /* istanbul ignore else */ else if (isFunction(value.valueOf)) {
         value = value.valueOf()
