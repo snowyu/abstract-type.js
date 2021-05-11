@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-alpha.10](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.9...v2.0.0-alpha.10) (2021-05-11)
+
+
+### Features
+
+* pass assigned=true option to ToValue if it's assigning ([c40b88b](https://github.com/snowyu/abstract-type.js/commit/c40b88bfcacc422e612766a49ede1a39acb27953))
+
 ## [2.0.0-alpha.9](https://github.com/snowyu/abstract-type.js/compare/v2.0.0-alpha.8...v2.0.0-alpha.9) (2021-05-10)
 
 
